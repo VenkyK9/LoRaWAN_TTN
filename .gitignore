@@ -1,0 +1,23 @@
+# --- Secrets: never commit these ---
+secrets.h
+telegraf.conf
+*.key
+*.pem
+.env
+
+# --- Arduino build output ---
+build/
+*.bin
+*.elf
+*.hex
+*.map
+
+# --- Python ---
+__pycache__/
+*.pyc
+
+# --- Editor and OS files ---
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini

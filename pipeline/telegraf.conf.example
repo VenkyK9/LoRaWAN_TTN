@@ -1,0 +1,34 @@
+# Telegraf: TTN MQTT -> InfluxDB 2.x
+#
+# These two blocks go into /etc/telegraf/telegraf.conf on the Raspberry Pi
+# (replace the existing commented-out mqtt_consumer and influxdb_v2
+# sections). Replace the three placeholders, then:
+#
+#   sudo telegraf --config /etc/telegraf/telegraf.conf --test
+#   sudo systemctl restart telegraf
+#   sudo journalctl -u telegraf -f
+#
+# Never commit the real file: it contains the TTN API key and the
+# InfluxDB token.
+
+[[inputs.mqtt_consumer]]
+  servers = ["tcp://eu1.cloud.thethings.network:1883"]
+
+  # v3/<application-id>@ttn/devices/<device-id>/up
+  # "+" matches any device, so one subscription covers every node.
+  topics = ["v3/YOUR_APP_ID@ttn/devices/+/up"]
+
+  username = "YOUR_APP_ID@ttn"
+  password = "PASTE_TTN_API_KEY_HERE"     # starts with NNSXS.
+
+  # TTN publishes each uplink as JSON. Telegraf flattens nested keys with
+  # underscores: uplink_message.decoded_payload.temperature becomes the
+  # field uplink_message_decoded_payload_temperature.
+  # Only numbers are kept; strings and booleans are dropped.
+  data_format = "json"
+
+[[outputs.influxdb_v2]]
+  urls = ["http://localhost:8086"]
+  token = "PASTE_INFLUXDB_TOKEN_HERE"     # needs write access to the bucket
+  organization = "Myorg"
+  bucket = "lorawan_data"
